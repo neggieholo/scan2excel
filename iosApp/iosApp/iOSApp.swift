@@ -12,6 +12,7 @@ struct iOSApp: App {
 
         // 2. Initialize the shared ScanContainer
         self.container = ScanContainer(databaseBuilder: builder)
+        ScanViewModelProvider.container = self.container
     }
 
     var body: some Scene {
