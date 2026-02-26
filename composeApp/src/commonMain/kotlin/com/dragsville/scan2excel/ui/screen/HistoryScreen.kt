@@ -21,8 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dragsville.scantoexcel.data.models.ScanResult
-import com.dragsville.scantoexcel.ui.viewmodel.ScanViewModel
+import com.dragsville.scan2excel.data.models.ScanResult
+import com.dragsville.scan2excel.ui.viewmodel.ScanViewModel
 
 @Composable
 fun HistoryScreen(

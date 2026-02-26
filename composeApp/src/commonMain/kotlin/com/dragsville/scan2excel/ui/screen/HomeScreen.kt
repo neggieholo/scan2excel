@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dragsville.scantoexcel.ui.viewmodel.ScanViewModel
+import com.dragsville.scan2excel.ui.viewmodel.ScanViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.draw.shadow
@@ -32,31 +31,58 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ScanViewModel) {
     val scans by viewModel.scans.collectAsState()
 
     // Style Constants
-    val sectionBg = Color(0xFFF1F3F4) // Light stylish grey
-    val titleColor = Color(0xFF202124) // Darker grey/black for text
+    val sectionBg = Color(0xFFF1F3F4)
+    val titleColor = Color(0xFF202124)
+    val customBlue = Color(0xFF2196F3)
 
-    Scaffold (
-        bottomBar = {
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { scanViewModel.addFakeScan() },
-                    containerColor = customBlue,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Scan Document")
-                }
-            } }
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("ScanToExcel", color = Color.White) },
+                actions = {
+                    IconButton(onClick = { /* Handle Notifications */ }) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Color.White)
+                    }
+                    IconButton(onClick = { /* Handle Profile */ }) {
+                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = customBlue
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.addFakeScan() }, // Fixed variable name
+                containerColor = customBlue,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Scan Document")
+            }
+        }
+    ) { padding -> // Using the required padding
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+                .padding(padding) // Apply scaffold padding here
                 .padding(16.dp)
         ) {
             // --- SECTION 1: RECENT SCANS ---
@@ -156,5 +182,4 @@ fun HomeScreen(viewModel: ScanViewModel) {
             }
         }
     }
-}
 }

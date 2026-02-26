@@ -2,8 +2,6 @@ package com.dragsville.scan2excel.ui.screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -12,10 +10,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.dragsville.scantoexcel.ui.ScanViewModelProvider
-import com.dragsville.scantoexcel.ui.viewmodel.ScanViewModel
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
+import com.dragsville.scan2excel.ui.ScanViewModelProvider
+import com.dragsville.scan2excel.ui.viewmodel.ScanViewModel
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
 
@@ -32,36 +28,11 @@ fun ScanApp(
 
     Scaffold(
         containerColor = customWhite, // Makes the app background white
-        topBar = {
-            TopAppBar(
-                title = { Text("ScanToExcel", color = Color.White) },
-                actions = {
-                    IconButton(onClick = { /* Handle Notifications */ }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Color.White)
-                    }
-                    IconButton(onClick = { /* Handle Profile */ }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customBlue
-                )
-            )
-        },
         bottomBar = {
             // Ensure your BottomNavigationBar implementation accepts containerColor
             // or wraps its content in a Surface/BottomAppBar
             Surface(color = customBlue) {
                 BottomNavigationBar(navController)
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { scanViewModel.addFakeScan() },
-                containerColor = customBlue,
-                contentColor = Color.White
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Scan Document")
             }
         }
     ) { padding ->

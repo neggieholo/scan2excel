@@ -23,6 +23,7 @@ textRecognition = "16.0.1"
 room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.1.0-1.0.29"
+navigationCompose = "2.8.0-alpha10"
 
 [libraries]
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
@@ -51,6 +52,7 @@ kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-s
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 tesseract-platform = { module = "org.bytedeco:tesseract-platform", version.ref = "tesseractPlatform" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
