@@ -6,13 +6,11 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
-    id("com.google.devtools.ksp")
-    id("androidx.room") version "2.8.4"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
-    // This replaces the old androidTarget() and the separate android { ... } block
     androidLibrary {
         namespace = "com.dragsville.scan2excel.library"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -52,12 +50,12 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         androidMain.dependencies {
-            // These are dependencies specific to the Android part of your KMP library
             implementation(libs.compose.uiTooling)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.text.recognition)
             implementation(libs.entity.extraction)
             implementation(libs.poi)
+            implementation(libs.androidx.room.sqlite.wrapper)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -84,6 +82,9 @@ compose.desktop {
 }
 
 dependencies {
-    // This bridges the library's UI code to the Android Studio Preview engine
     androidRuntimeClasspath(libs.compose.uiTooling)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }

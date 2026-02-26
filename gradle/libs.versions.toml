@@ -13,18 +13,22 @@ composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.0"
 entityExtraction = "16.0.0-beta6"
 junit = "4.13.2"
-kotlin = "2.3.0"
+kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.2"
 material3 = "1.10.0-alpha05"
 poi = "5.5.1"
-roomRuntime = "2.8.4"
 sqliteBundled = "2.6.2"
 tesseractPlatform = "5.5.2-1.5.13"
 textRecognition = "16.0.1"
+room = "2.8.4"
+sqlite = "2.6.2"
+ksp = "2.1.0-1.0.29"
 
 [libraries]
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
-androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-sqlite-wrapper = { module = "androidx.room:room-sqlite-wrapper", version.ref = "room" }
 entity-extraction = { module = "com.google.mlkit:entity-extraction", version.ref = "entityExtraction" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -57,3 +61,5 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }

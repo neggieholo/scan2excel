@@ -54,5 +54,6 @@ dependencies {
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.room.runtime) // Added Room dependency
     debugImplementation(libs.compose.uiTooling)
 }

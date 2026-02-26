@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.dragsville.scan2excel.data.models.ScanResult
 import com.dragsville.scan2excel.data.repository.ScanRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
@@ -15,15 +17,15 @@ class ScanViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _scans = MutableStateFlow<List<ScanResult>>(emptyList())
+    private val _scans: StateFlow<List<ScanResult>> = repository.getAllScans()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
     val scans: StateFlow<List<ScanResult>> = _scans
 
-    fun loadScans() {
-        viewModelScope.launch {
-            _scans.value = repository.getAllScans()
-        }
-    }
-
+    @OptIn(kotlin.time.ExperimentalTime::class)
     fun addFakeScan() {
         val currentTime = Clock.System.now().toEpochMilliseconds()
         viewModelScope.launch {
@@ -33,7 +35,6 @@ class ScanViewModel(
                 timestamp = currentTime
             )
             repository.saveScan(scan)
-            loadScans()
         }
     }
 }

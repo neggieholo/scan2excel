@@ -12,5 +12,5 @@ interface ScanDao {
     suspend fun insert(scan: ScanEntity)
 
     @Query("SELECT * FROM scans ORDER BY timestamp DESC")
-    suspend fun getAll(): Flow<List<ScanEntity>>
+    fun getAll(): Flow<List<ScanEntity>>
 }
