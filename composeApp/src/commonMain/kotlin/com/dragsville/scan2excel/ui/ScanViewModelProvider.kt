@@ -13,9 +13,14 @@ object ScanViewModelProvider {
 
     val Factory = viewModelFactory {
         initializer {
+            val handle = try {
+                this.createSavedStateHandle()
+            } catch (e: Exception) {
+                null
+            }
             ScanViewModel(
                 repository = container.scanRepository, // Pull from the shared container
-                savedStateHandle = this.createSavedStateHandle()
+                savedStateHandle = handle
             )
         }
     }

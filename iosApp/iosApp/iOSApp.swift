@@ -1,5 +1,5 @@
 import SwiftUI
-import ComposeApp // This is your shared Kotlin code
+import ComposeApp
 
 @main
 struct iOSApp: App {
@@ -11,7 +11,7 @@ struct iOSApp: App {
         let builder = DatabaseKt.getIosDatabaseBuilder()
 
         // 2. Initialize the shared ScanContainer
-        self.container = ScanContainer(databaseBuilder: builder)
+        self.container = ScanContainer(databaseBuilder: builder, engine: Darwin().create())
         ScanViewModelProvider.container = self.container
     }
 

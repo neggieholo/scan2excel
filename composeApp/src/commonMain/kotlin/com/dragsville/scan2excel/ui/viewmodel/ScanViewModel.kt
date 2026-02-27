@@ -14,7 +14,7 @@ import kotlin.time.Clock
 
 class ScanViewModel(
     private val repository: ScanRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle? = null
 ) : ViewModel() {
 
     private val _scans: StateFlow<List<ScanResult>> = repository.getAllScans()

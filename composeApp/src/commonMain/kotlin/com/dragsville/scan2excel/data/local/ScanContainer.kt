@@ -3,17 +3,22 @@ package com.dragsville.scan2excel.data.local
 import androidx.room.RoomDatabase
 import com.dragsville.scan2excel.data.repository.ScanRepository
 import com.dragsville.scan2excel.data.repository.ScanRepositoryImpl
+import com.dragsville.scan2excel.networking.ApiClient
+import com.dragsville.scan2excel.networking.createHttpClient
+import io.ktor.client.engine.HttpClientEngine
 
 
 class ScanContainer(
-    // We pass the platform-specific builder in here!
-    databaseBuilder: RoomDatabase.Builder<ScanDatabase>
+    databaseBuilder: RoomDatabase.Builder<ScanDatabase>,
+    engine: HttpClientEngine
 ) {
-    // 1. This calls your 'createDatabase' function to finish the handshake
+    private val httpClient = createHttpClient(engine)
     private val database: ScanDatabase = createDatabase(databaseBuilder)
 
-    // 2. This provides the repository to the rest of the app
+    val apiClient: ApiClient by lazy {
+        ApiClient(httpClient)
+    }
     val scanRepository: ScanRepository by lazy {
-        ScanRepositoryImpl(database.scanDao())
+        ScanRepositoryImpl(database.scanDao(), apiClient)
     }
 }

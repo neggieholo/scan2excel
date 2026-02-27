@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
     implementation(libs.compose.uiToolingPreview)
-    implementation(libs.androidx.room.runtime) // Added Room dependency
+    implementation(libs.androidx.room.runtime)
     debugImplementation(libs.compose.uiTooling)
+    implementation(libs.ktor.client.okhttp)
 }

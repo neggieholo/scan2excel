@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -47,6 +48,7 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.navigation.compose)
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+            implementation(libs.bundles.ktor)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -58,12 +60,17 @@ kotlin {
             implementation(libs.entity.extraction)
             implementation(libs.poi)
             implementation(libs.androidx.room.sqlite.wrapper)
+            implementation(libs.ktor.client.okhttp)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.poi)
             implementation(libs.tesseract.platform)
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

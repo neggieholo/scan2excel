@@ -3,11 +3,13 @@ package com.dragsville.scan2excel.data.repository
 import com.dragsville.scan2excel.data.local.ScanDao
 import com.dragsville.scan2excel.data.local.ScanEntity
 import com.dragsville.scan2excel.data.models.ScanResult
+import com.dragsville.scan2excel.networking.ApiClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ScanRepositoryImpl(
-    private val dao: ScanDao
+    private val dao: ScanDao,
+    private val apiClient: ApiClient
 ) : ScanRepository {
 
     override suspend fun saveScan(result: ScanResult) {
