@@ -20,8 +20,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 
 // In commonMain/ui/screen/LoginScreen.kt
+
+class LoginViewScreen : Screen {
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+
+        LoginScreen(onLoginSuccess = {
+            // This replaces rootNavController.navigate("main")
+            navigator.replaceAll(MainViewScreen())
+        })
+    }
+}
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit) {
     val customBlue = Color(0xFF2196F3)

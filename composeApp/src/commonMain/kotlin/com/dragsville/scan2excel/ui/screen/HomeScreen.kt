@@ -40,94 +40,74 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ScanViewModel) {
     val scans by viewModel.scans.collectAsState()
-
-    // Style Constants
-    val sectionBg = Color(0xFFF1F3F4)
-    val titleColor = Color(0xFF202124)
+    val rootNavigator = LocalNavigator.currentOrThrow.parent
     val customBlue = Color(0xFF2196F3)
+    // USE THEME COLORS INSTEAD OF HARD-CODED ONES
+    val colorScheme = MaterialTheme.colorScheme
 
     Scaffold(
+        containerColor = colorScheme.background, // Respects dark mode background
         topBar = {
             TopAppBar(
-                title = { Text("ScanToExcel", color = Color.White) },
+                title = { Text("ScanToExcel") },
                 actions = {
-                    IconButton(onClick = { /* Handle Notifications */ }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Color.White)
+                    IconButton(onClick = { rootNavigator?.push(NotificationScreen()) }) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications")
                     }
-                    IconButton(onClick = { /* Handle Profile */ }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
+                    IconButton(onClick = { rootNavigator?.push(ProfileScreen()) }) {
+                        Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
                 },
+                windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customBlue
+                    containerColor = customBlue,      // Usually Blue in Light, Darker Blue in Dark
+                    titleContentColor = colorScheme.onPrimary, // White text on Blue
+                    actionIconContentColor = colorScheme.onPrimary
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.addFakeScan() }, // Fixed variable name
+                onClick = { viewModel.addFakeScan() },
                 containerColor = customBlue,
-                contentColor = Color.White
+                contentColor = colorScheme.onPrimaryContainer
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Scan Document")
+                Icon(Icons.Default.Add, contentDescription = "Scan")
             }
         }
-    ) { padding -> // Using the required padding
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding(padding) // Apply scaffold padding here
+                .padding(padding)
                 .padding(16.dp)
         ) {
             // --- SECTION 1: RECENT SCANS ---
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Recent Scans",
-                    style = MaterialTheme.typography.headlineSmall, // More stylish font
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = titleColor
+                    color = colorScheme.onBackground // Automatically switches White/Black
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp)) // Added shadow
-                        .background(sectionBg, RoundedCornerShape(12.dp)) // Darker background
+                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
+                        .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp)) // Adapts to Dark Mode
                         .padding(8.dp)
                 ) {
-                    if (scans.isEmpty()) {
-                        Text(
-                            "No recent scans",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    } else {
-                        LazyRow {
-                            items(scans.take(10)) { scan ->
-                                Card(
-                                    modifier = Modifier
-                                        .size(120.dp)
-                                        .padding(4.dp),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text("Scan\n#${scan.id}", fontWeight = FontWeight.Medium)
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    // ... Content ...
                 }
             }
 
@@ -137,9 +117,9 @@ fun HomeScreen(viewModel: ScanViewModel) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Exported Documents",
-                    style = MaterialTheme.typography.headlineSmall, // Consistent styling
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = titleColor
+                    color = colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -147,32 +127,29 @@ fun HomeScreen(viewModel: ScanViewModel) {
                     modifier = Modifier
                         .fillMaxSize()
                         .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
-                        .background(sectionBg, RoundedCornerShape(12.dp))
+                        .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
                         .padding(8.dp)
                 ) {
                     if (scans.isEmpty()) {
                         Text(
                             "No recent exports",
                             modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = colorScheme.onSurfaceVariant
                         )
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxWidth()) {
                             items(scans) { scan ->
                                 Card(
                                     modifier = Modifier.padding(vertical = 4.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                                    // Use default card colors so they adapt
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorScheme.surface
+                                    )
                                 ) {
                                     ListItem(
-                                        headlineContent = {
-                                            Text(
-                                                "Document ${scan.id}",
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                        },
+                                        headlineContent = { Text("Document ${scan.id}") },
                                         supportingContent = { Text(scan.filePath) },
-                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                        // ListItem defaults to surface, so no hard-coded white here!
                                     )
                                 }
                             }
@@ -180,6 +157,8 @@ fun HomeScreen(viewModel: ScanViewModel) {
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.weight(0.5f))
         }
     }
 }
