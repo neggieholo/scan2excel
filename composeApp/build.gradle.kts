@@ -47,12 +47,14 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.navigation.compose)
-            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+            implementation(libs.material.icons.extended)
             implementation(libs.bundles.ktor)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.tabNavigator)
             implementation(libs.voyager.transitions)
+            implementation(libs.jetbrains.material3.adaptive.navigation.suite)
+            implementation(libs.jetbrains.material3.adaptive)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

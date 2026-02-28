@@ -1,4 +1,6 @@
 [versions]
+adaptive = "1.0.1"
+navigation-suite = "1.7.3"
 agp = "8.11.2"
 android-compileSdk = "36"
 android-minSdk = "26"
@@ -16,6 +18,7 @@ junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.2"
 material3 = "1.10.0-alpha05"
+materialIconsExtended = "1.7.3"
 poi = "5.5.1"
 sqliteBundled = "2.6.2"
 tesseractPlatform = "5.5.2-1.5.13"
@@ -28,6 +31,8 @@ ktor = "3.0.1"
 voyager = "1.1.0-beta02"
 
 [libraries]
+jetbrains-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+jetbrains-material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "navigation-suite" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -51,6 +56,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 tesseract-platform = { module = "org.bytedeco:tesseract-platform", version.ref = "tesseractPlatform" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }

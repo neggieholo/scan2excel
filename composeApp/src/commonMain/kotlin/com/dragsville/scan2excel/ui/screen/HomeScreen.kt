@@ -40,6 +40,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -52,27 +55,55 @@ fun HomeScreen(viewModel: ScanViewModel) {
     val customBlue = Color(0xFF2196F3)
     // USE THEME COLORS INSTEAD OF HARD-CODED ONES
     val colorScheme = MaterialTheme.colorScheme
+    val metallicGradient = androidx.compose.ui.graphics.Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFFBDBDBD), // Darker Silver top
+            Color(0xFFF5F5F5), // White-ish shine center
+            Color(0xFFEEEEEE), // Light Gray middle
+            Color(0xFF9E9E9E)  // Darker Silver bottom
+        )
+    )
 
     Scaffold(
         containerColor = colorScheme.background, // Respects dark mode background
         topBar = {
-            TopAppBar(
-                title = { Text("ScanToExcel") },
-                actions = {
-                    IconButton(onClick = { rootNavigator?.push(NotificationScreen()) }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications")
-                    }
-                    IconButton(onClick = { rootNavigator?.push(ProfileScreen()) }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
-                    }
-                },
-                windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = customBlue,      // Usually Blue in Light, Darker Blue in Dark
-                    titleContentColor = colorScheme.onPrimary, // White text on Blue
-                    actionIconContentColor = colorScheme.onPrimary
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(metallicGradient)
+                    .shadow(elevation = 8.dp)
+            ) {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "ScanToExcel",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                // Using the .sp extension property directly
+                                letterSpacing = 1.5.sp,
+                                // Subtle shadow makes blue text look "etched" into metal
+                                shadow = Shadow(
+                                    color = Color.Black.copy(alpha = 0.2f),
+                                    offset = Offset(2f, 2f),
+                                    blurRadius = 4f
+                                )
+                            ),
+                            color = customBlue
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = { rootNavigator?.push(NotificationScreen()) }) {
+                            Icon(Icons.Default.Notifications, null, tint = customBlue)
+                        }
+                        IconButton(onClick = { rootNavigator?.push(ProfileScreen()) }) {
+                            Icon(Icons.Default.Person, null, tint = customBlue)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent // Allows gradient to show
+                    )
                 )
-            )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -107,7 +138,31 @@ fun HomeScreen(viewModel: ScanViewModel) {
                         .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp)) // Adapts to Dark Mode
                         .padding(8.dp)
                 ) {
-                    // ... Content ...
+                    if (scans.isEmpty()) {
+                        Text(
+                            "No recent exports",
+                            modifier = Modifier.align(Alignment.Center),
+                            color = colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        LazyRow(modifier = Modifier.fillMaxWidth()) {
+                            items(scans) { scan ->
+                                Card(
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                    // Use default card colors so they adapt
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorScheme.surface
+                                    )
+                                ) {
+                                    ListItem(
+                                        headlineContent = { Text("Document ${scan.id}") },
+                                        supportingContent = { Text(scan.filePath) },
+                                        // ListItem defaults to surface, so no hard-coded white here!
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
