@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -136,7 +138,6 @@ fun ScanApp(
                                     icon = {
                                         // THE ICON BUBBLE
                                         Surface(
-                                            // Black bg for unselected, White bg for selected
                                             color = if (isSelected) Color.White else Color.Black,
                                             shape = CircleShape,
                                             modifier = Modifier.size(48.dp).shadow(4.dp, CircleShape)
@@ -146,7 +147,6 @@ fun ScanApp(
                                                     tab.options.icon!!,
                                                     null,
                                                     modifier = Modifier.size(24.dp),
-                                                    // White icon on black bg, Black icon on white bg
                                                     tint = if (isSelected) Color.Black else Color.White
                                                 )
                                             }
@@ -183,7 +183,6 @@ fun ScanApp(
                     NavigationSuite(
                         layoutType = currentLayoutType,
                         colors = NavigationSuiteDefaults.colors(
-                            // Set containers to transparent so the modifier background shows through
                             navigationBarContainerColor = Color.Transparent,
                             navigationRailContainerColor = Color.Transparent
                         ),
@@ -196,7 +195,6 @@ fun ScanApp(
                                     selected = isSelected,
                                     onClick = { tabNavigator.current = tab },
                                     icon = {
-                                        // 2. The same high-contrast "Button Bubble"
                                         Surface(
                                             color = if (isSelected) Color.White else Color.Black,
                                             shape = CircleShape,

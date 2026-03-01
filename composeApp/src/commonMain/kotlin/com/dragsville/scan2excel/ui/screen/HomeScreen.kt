@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -71,6 +73,7 @@ fun HomeScreen(viewModel: ScanViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(metallicGradient)
+                    .statusBarsPadding()
                     .shadow(elevation = 8.dp)
             ) {
                 TopAppBar(
@@ -81,7 +84,6 @@ fun HomeScreen(viewModel: ScanViewModel) {
                                 fontWeight = FontWeight.ExtraBold,
                                 // Using the .sp extension property directly
                                 letterSpacing = 1.5.sp,
-                                // Subtle shadow makes blue text look "etched" into metal
                                 shadow = Shadow(
                                     color = Color.Black.copy(alpha = 0.2f),
                                     offset = Offset(2f, 2f),
@@ -99,6 +101,7 @@ fun HomeScreen(viewModel: ScanViewModel) {
                             Icon(Icons.Default.Person, null, tint = customBlue)
                         }
                     },
+                    windowInsets = WindowInsets(0, 0, 0, 0),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent // Allows gradient to show
                     )
