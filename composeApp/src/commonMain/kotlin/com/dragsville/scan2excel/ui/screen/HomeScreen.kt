@@ -1,5 +1,6 @@
 package com.dragsville.scan2excel.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,62 +27,68 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.graphics.Brush
+import org.jetbrains.compose.resources.painterResource
+import scan2excel.composeapp.generated.resources.Res
+import scan2excel.composeapp.generated.resources.app_logo
+import scan2excel.composeapp.generated.resources.ic_app_logo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ScanViewModel) {
     val scans by viewModel.scans.collectAsState()
     val rootNavigator = LocalNavigator.currentOrThrow.parent
-    val customBlue = Color(0xFF2196F3)
-    // USE THEME COLORS INSTEAD OF HARD-CODED ONES
     val colorScheme = MaterialTheme.colorScheme
-    val metallicGradient = androidx.compose.ui.graphics.Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFFBDBDBD), // Darker Silver top
-            Color(0xFFF5F5F5), // White-ish shine center
-            Color(0xFFEEEEEE), // Light Gray middle
-            Color(0xFF9E9E9E)  // Darker Silver bottom
-        )
-    )
 
     Scaffold(
-        containerColor = colorScheme.background, // Respects dark mode background
+        containerColor = colorScheme.surface,
         topBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(metallicGradient)
-                    .statusBarsPadding()
-                    .shadow(elevation = 8.dp)
+                    .background(color = colorScheme.surface)
+                    .drawBehind {
+                        val strokeWidth = 2.dp.toPx()
+//                        drawLine(
+//                            color = colorScheme.primary,
+//                            start = Offset(0f, 0f), // Top-left corner
+//                            end = Offset(size.width, 0f), // Top-right corner
+//                            strokeWidth = strokeWidth
+//                        )
+                        drawLine(
+                            color = colorScheme.primary,
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
             ) {
                 TopAppBar(
                     title = {
                         Text(
-                            text = "ScanToExcel",
+                            text = "Scan2Excel",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
-                                // Using the .sp extension property directly
                                 letterSpacing = 1.5.sp,
                                 shadow = Shadow(
                                     color = Color.Black.copy(alpha = 0.2f),
@@ -90,15 +96,15 @@ fun HomeScreen(viewModel: ScanViewModel) {
                                     blurRadius = 4f
                                 )
                             ),
-                            color = customBlue
+                            color = colorScheme.primary
                         )
                     },
                     actions = {
                         IconButton(onClick = { rootNavigator?.push(NotificationScreen()) }) {
-                            Icon(Icons.Default.Notifications, null, tint = customBlue)
+                            Icon(Icons.Default.Notifications, null, tint = colorScheme.primary)
                         }
                         IconButton(onClick = { rootNavigator?.push(ProfileScreen()) }) {
-                            Icon(Icons.Default.Person, null, tint = customBlue)
+                            Icon(Icons.Default.Person, null, tint = colorScheme.primary)
                         }
                     },
                     windowInsets = WindowInsets(0, 0, 0, 0),
@@ -111,7 +117,7 @@ fun HomeScreen(viewModel: ScanViewModel) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.addFakeScan() },
-                containerColor = customBlue,
+                containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimaryContainer
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Scan")
@@ -216,7 +222,7 @@ fun HomeScreen(viewModel: ScanViewModel) {
                 }
             }
 
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.1f))
         }
     }
 }

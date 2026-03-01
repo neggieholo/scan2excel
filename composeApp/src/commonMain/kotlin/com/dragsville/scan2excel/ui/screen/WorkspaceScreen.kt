@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun WorkspaceScreen() {
     val colorScheme = colorScheme
     Scaffold(
         topBar = {
@@ -46,7 +46,7 @@ fun SettingsScreen() {
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Settings",
+                            text = "Workspace",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.5.sp,

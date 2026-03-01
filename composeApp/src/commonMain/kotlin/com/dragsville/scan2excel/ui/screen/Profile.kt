@@ -6,11 +6,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -20,12 +25,26 @@ class ProfileScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val customBlue = Color(0xFF2196F3)
+        val colorScheme = colorScheme
 
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Profile") },
+                    title = {
+                        Text(
+                            text = "Profile",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 1.5.sp,
+                                shadow = Shadow(
+                                    color = Color.Black.copy(alpha = 0.2f),
+                                    offset = Offset(2f, 2f),
+                                    blurRadius = 4f
+                                )
+                            ),
+                            color = colorScheme.primary
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { navigator.pop() }) {
                             Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back")
@@ -45,10 +64,10 @@ class ProfileScreen : Screen {
                 Surface(
                     modifier = Modifier.size(100.dp),
                     shape = MaterialTheme.shapes.extraLarge,
-                    color = customBlue.copy(alpha = 0.1f)
+                    color = colorScheme.primary.copy(alpha = 0.1f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text("JD", style = MaterialTheme.typography.headlineLarge, color = customBlue)
+                        Text("JD", style = MaterialTheme.typography.headlineLarge, color = colorScheme.primary)
                     }
                 }
 

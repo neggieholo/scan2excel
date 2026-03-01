@@ -3,6 +3,7 @@ package com.dragsville.scan2excel.ui.screen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -34,13 +35,23 @@ object AccountsTab : Tab {
     @Composable override fun Content() = AccountsScreen()
 }
 
-object SettingsTab : Tab {
+object WorkspaceTab : Tab {
     override val options: TabOptions
         @Composable get() = TabOptions(
             index = 3u,
-            title = "Settings",
-            icon = rememberVectorPainter(Icons.Default.Settings)
+            title = "Workspace",
+            icon = rememberVectorPainter(Icons.Default.PendingActions)
         )
 
-    @Composable override fun Content() = SettingsScreen()
+    @Composable override fun Content() = WorkspaceScreen()
 }
+//object SettingsTab : Tab {
+//    override val options: TabOptions
+//        @Composable get() = TabOptions(
+//            index = 3u,
+//            title = "Settings",
+//            icon = rememberVectorPainter(Icons.Default.Settings)
+//        )
+//
+//    @Composable override fun Content() = SettingsScreen()
+//}

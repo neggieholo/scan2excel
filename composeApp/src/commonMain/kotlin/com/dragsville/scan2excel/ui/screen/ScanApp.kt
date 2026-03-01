@@ -7,11 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -29,7 +26,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,7 +52,7 @@ fun ScanApp(
     val homeTab = HomeTab(scanViewModel)
     val historyTab = HistoryTab(scanViewModel)
     val accountsTab = AccountsTab
-    val settingsTab = SettingsTab
+    val settingsTab = WorkspaceTab
     val tabs = listOf(homeTab, historyTab, accountsTab, settingsTab)
 
     TabNavigator(homeTab) { tabNavigator ->
@@ -176,8 +172,12 @@ fun ScanApp(
                     }
                 } else {
                     // 1. Define the Shiny Gradient for the Suite (horizontal for bottom bar, vertical for rail)
-                    val suiteGradient = Brush.linearGradient(
-                        colors = listOf(Color(0xFF1565C0), Color(0xFFE3F2FD), Color(0xFF1976D2))
+                    val suiteGradient = Brush.verticalGradient(
+                        0.0f to Color(0xFF0D47A1), // Very deep blue (Dark edge)
+                        0.45f to Color(0xFF64B5F6), // Shiny light blue
+                        0.5f to Color(0xFFE3F2FD), // Sharp White glint (The shine)
+                        0.55f to Color(0xFF64B5F6), // Back to light blue
+                        1.0f to Color(0xFF1565C0)  // Deep blue (Content edge)
                     )
 
                     NavigationSuite(
@@ -186,7 +186,7 @@ fun ScanApp(
                             navigationBarContainerColor = Color.Transparent,
                             navigationRailContainerColor = Color.Transparent
                         ),
-                        modifier = Modifier.background(suiteGradient).shadow(8.dp),
+                        modifier = Modifier.background(suiteGradient),
                         content = {
                             tabs.forEach { tab ->
                                 val isSelected = tabNavigator.current == tab
@@ -194,6 +194,7 @@ fun ScanApp(
                                 item(
                                     selected = isSelected,
                                     onClick = { tabNavigator.current = tab },
+                                    alwaysShowLabel = false,
                                     icon = {
                                         Surface(
                                             color = if (isSelected) Color.White else Color.Black,
@@ -210,13 +211,7 @@ fun ScanApp(
                                             }
                                         }
                                     },
-                                    label = {
-                                        Text(
-                                            tab.options.title,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold)
-                                        )
-                                    },
+                                    label = null,
                                     colors = suiteItemColors
                                 )
                             }
