@@ -1,6 +1,5 @@
 package com.dragsville.scan2excel.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -35,23 +36,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import androidx.compose.ui.graphics.Brush
-import org.jetbrains.compose.resources.painterResource
-import scan2excel.composeapp.generated.resources.Res
-import scan2excel.composeapp.generated.resources.app_logo
-import scan2excel.composeapp.generated.resources.ic_app_logo
+import com.dragsville.scan2excel.scanManager.ScanOptionsDialog
+import com.dragsville.scan2excel.scanManager.rememberScannerManager
+import io.github.ismoy.imagepickerkmp.domain.config.ImagePickerConfig
+import io.github.ismoy.imagepickerkmp.domain.extensions.loadBytes
+import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
+import io.github.ismoy.imagepickerkmp.presentation.ui.components.ImagePickerLauncher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +65,10 @@ fun HomeScreen(viewModel: ScanViewModel) {
     val scans by viewModel.scans.collectAsState()
     val rootNavigator = LocalNavigator.currentOrThrow.parent
     val colorScheme = MaterialTheme.colorScheme
+    var showMenu by remember { mutableStateOf(false) }
+    val ocrResult by viewModel.ocrDialogText.collectAsState()
+
+    val scannerManager = rememberScannerManager()
 
     Scaffold(
         containerColor = colorScheme.surface,
@@ -69,12 +79,6 @@ fun HomeScreen(viewModel: ScanViewModel) {
                     .background(color = colorScheme.surface)
                     .drawBehind {
                         val strokeWidth = 2.dp.toPx()
-//                        drawLine(
-//                            color = colorScheme.primary,
-//                            start = Offset(0f, 0f), // Top-left corner
-//                            end = Offset(size.width, 0f), // Top-right corner
-//                            strokeWidth = strokeWidth
-//                        )
                         drawLine(
                             color = colorScheme.primary,
                             start = Offset(0f, size.height),
@@ -116,7 +120,7 @@ fun HomeScreen(viewModel: ScanViewModel) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.addFakeScan() },
+                onClick = { showMenu = true },
                 containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimaryContainer
             ) {
@@ -223,6 +227,59 @@ fun HomeScreen(viewModel: ScanViewModel) {
             }
 
             Spacer(modifier = Modifier.weight(0.1f))
+        }
+
+        if (showMenu) {
+            ScanOptionsDialog(
+                onDismiss = { showMenu = false },
+                onPickFile = { scannerManager.launchFilePicker() }, // Opens File Picker
+                onLiveScan = { scannerManager.launchLiveScan() }   // Opens Camera/Webcam
+            )
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (scannerManager.showCamera) {
+                ImagePickerLauncher(
+                    config = ImagePickerConfig(
+                        onPhotoCaptured = { result ->
+                            scannerManager.reset()
+                            viewModel.processImage(result.loadBytes())
+                        },
+                        onError = { scannerManager.reset() },
+                        onDismiss = { scannerManager.reset() }
+                    )
+                )
+            }
+
+            if (scannerManager.showGallery) {
+                GalleryPickerLauncher(
+                    onPhotosSelected = { photos ->
+                        scannerManager.reset()
+                        photos.firstOrNull()?.let { viewModel.processImage(it.loadBytes()) }
+                    },
+                    onError = { scannerManager.reset() },
+                    onDismiss = { scannerManager.reset() },
+                    allowMultiple = true
+                )
+            }
+        }
+
+        ocrResult?.let { text ->
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissOcrDialog() },
+                title = { Text("Extracted Text") },
+                text = {
+                    // Using a Column in case the text is long
+                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Text(text)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.dismissOcrDialog() }) {
+                        Text("Close")
+                    }
+                }
+            )
         }
     }
 }

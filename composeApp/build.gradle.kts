@@ -56,6 +56,8 @@ kotlin {
             implementation(libs.voyager.transitions)
             implementation(libs.jetbrains.material3.adaptive.navigation.suite)
             implementation(libs.jetbrains.material3.adaptive)
+            implementation(libs.documentscanner.compose)
+            implementation(libs.imagepickerkmp)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -68,6 +70,7 @@ kotlin {
             implementation(libs.poi)
             implementation(libs.androidx.room.sqlite.wrapper)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -93,6 +96,10 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.dragsville.scan2excel"
             packageVersion = "1.0.0"
+            macOS {
+                bundleID = "com.dragsville.scan2excel"
+                entitlementsFile.set(project.file("entitlements.plist"))
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dragsville.scan2excel.data.models.ScanResult
 import com.dragsville.scan2excel.data.repository.ScanRepository
+import com.dragsville.scan2excel.scanManager.OcrManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ class ScanViewModel(
     private val savedStateHandle: SavedStateHandle? = null
 ) : ViewModel() {
 
+    private val ocrManager = OcrManager()
     private val _scans: StateFlow<List<ScanResult>> = repository.getAllScans()
         .stateIn(
             scope = viewModelScope,
@@ -24,6 +26,9 @@ class ScanViewModel(
             initialValue = emptyList()
         )
     val scans: StateFlow<List<ScanResult>> = _scans
+
+    private val _ocrDialogText = MutableStateFlow<String?>(null)
+    val ocrDialogText: StateFlow<String?> = _ocrDialogText
 
     @OptIn(kotlin.time.ExperimentalTime::class)
     fun addFakeScan() {
@@ -36,5 +41,21 @@ class ScanViewModel(
             )
             repository.saveScan(scan)
         }
+    }
+
+    fun processImage(imageBytes: ByteArray) {
+        viewModelScope.launch {
+            try {
+                // This calls your platform-specific OCR
+                val result = ocrManager.extractText(imageBytes)
+                _ocrDialogText.value = result // Trigger the dialog
+            } catch (e: Exception) {
+                _ocrDialogText.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun dismissOcrDialog() {
+        _ocrDialogText.value = null
     }
 }
