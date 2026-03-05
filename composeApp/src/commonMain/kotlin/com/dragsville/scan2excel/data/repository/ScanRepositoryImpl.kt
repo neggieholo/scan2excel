@@ -2,6 +2,7 @@ package com.dragsville.scan2excel.data.repository
 
 import com.dragsville.scan2excel.data.local.ScanDao
 import com.dragsville.scan2excel.data.local.ScanEntity
+import com.dragsville.scan2excel.data.local.TemplateEntity
 import com.dragsville.scan2excel.data.models.ScanResult
 import com.dragsville.scan2excel.networking.ApiClient
 import kotlinx.coroutines.flow.Flow
@@ -32,5 +33,17 @@ class ScanRepositoryImpl(
                 )
             }
         }
+    }
+
+    override suspend fun saveTemplate(name: String, fields: List<String>) {
+        dao.insertTemplate(TemplateEntity(name = name, fields = fields))
+    }
+
+    override fun getAllTemplates(): Flow<List<TemplateEntity>> {
+        return dao.getAllTemplates()
+    }
+
+    override suspend fun deleteTemplate(id: Long) {
+        dao.deleteTemplate(id)
     }
 }

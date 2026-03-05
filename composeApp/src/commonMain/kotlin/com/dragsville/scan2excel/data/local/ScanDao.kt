@@ -13,4 +13,12 @@ interface ScanDao {
 
     @Query("SELECT * FROM scans ORDER BY timestamp DESC")
     fun getAll(): Flow<List<ScanEntity>>
+
+    @Insert suspend fun insertTemplate(template: TemplateEntity)
+
+    @Query("SELECT * FROM templates")
+    fun getAllTemplates(): Flow<List<TemplateEntity>>
+
+    @Query("DELETE FROM templates WHERE id = :id")
+    suspend fun deleteTemplate(id: Long)
 }

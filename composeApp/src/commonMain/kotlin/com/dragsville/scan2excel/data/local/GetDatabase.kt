@@ -9,5 +9,6 @@ fun createDatabase(builder: RoomDatabase.Builder<ScanDatabase>): ScanDatabase {
     return builder
         .setDriver(BundledSQLiteDriver()) // Use the 2026 standard driver
         .setQueryCoroutineContext(Dispatchers.IO)
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }

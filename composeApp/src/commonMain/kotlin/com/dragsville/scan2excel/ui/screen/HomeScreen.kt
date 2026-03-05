@@ -34,6 +34,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
@@ -45,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -54,6 +56,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.dragsville.scan2excel.scanManager.ScanOptionsDialog
 import com.dragsville.scan2excel.scanManager.rememberScannerManager
+import com.dragsville.scan2excel.ui.helpers.CreateTemplateSection
 import io.github.ismoy.imagepickerkmp.domain.config.ImagePickerConfig
 import io.github.ismoy.imagepickerkmp.domain.extensions.loadBytes
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
@@ -65,7 +68,8 @@ fun HomeScreen(viewModel: ScanViewModel) {
     val scans by viewModel.scans.collectAsState()
     val rootNavigator = LocalNavigator.currentOrThrow.parent
     val colorScheme = MaterialTheme.colorScheme
-    var showMenu by remember { mutableStateOf(false) }
+    var showMenu by rememberSaveable { mutableStateOf(false) }
+    var createActive by rememberSaveable { mutableStateOf(false) }
     val ocrResult by viewModel.ocrDialogText.collectAsState()
 
     val scannerManager = rememberScannerManager()
@@ -120,11 +124,24 @@ fun HomeScreen(viewModel: ScanViewModel) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showMenu = true },
+                onClick = {
+                    if (showMenu || createActive) {
+                        // If anything is open, the FAB acts as a global "Cancel/Close"
+                        showMenu = false
+                        createActive = false
+                        scannerManager.reset()
+                    } else {
+                        // If we are on the dashboard, open the menu
+                        showMenu = true
+                    }
+                },
                 containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimaryContainer
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Scan")
+                Icon(
+                    imageVector = if (showMenu || createActive) Icons.Default.Close else Icons.Default.Add,
+                    contentDescription = if (showMenu || createActive) "Close" else "Add"
+                )
             }
         }
     ) { padding ->
@@ -134,133 +151,156 @@ fun HomeScreen(viewModel: ScanViewModel) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
+            if(!createActive) {
             // --- SECTION 1: RECENT SCANS ---
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Recent Scans",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onBackground // Automatically switches White/Black
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
-                        .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp)) // Adapts to Dark Mode
-                        .padding(8.dp)
-                ) {
-                    if (scans.isEmpty()) {
-                        Text(
-                            "No recent exports",
-                            modifier = Modifier.align(Alignment.Center),
-                            color = colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        LazyRow(modifier = Modifier.fillMaxWidth()) {
-                            items(scans) { scan ->
-                                Card(
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    // Use default card colors so they adapt
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = colorScheme.surface
-                                    )
-                                ) {
-                                    ListItem(
-                                        headlineContent = { Text("Document ${scan.id}") },
-                                        supportingContent = { Text(scan.filePath) },
-                                        // ListItem defaults to surface, so no hard-coded white here!
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // --- SECTION 2: EXPORTED DOCUMENTS ---
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Exported Documents",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
-                        .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
-                        .padding(8.dp)
-                ) {
-                    if (scans.isEmpty()) {
-                        Text(
-                            "No recent exports",
-                            modifier = Modifier.align(Alignment.Center),
-                            color = colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                            items(scans) { scan ->
-                                Card(
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    // Use default card colors so they adapt
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = colorScheme.surface
-                                    )
-                                ) {
-                                    ListItem(
-                                        headlineContent = { Text("Document ${scan.id}") },
-                                        supportingContent = { Text(scan.filePath) },
-                                        // ListItem defaults to surface, so no hard-coded white here!
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(0.1f))
-        }
-
-        if (showMenu) {
-            ScanOptionsDialog(
-                onDismiss = { showMenu = false },
-                onPickFile = { scannerManager.launchFilePicker() }, // Opens File Picker
-                onLiveScan = { scannerManager.launchLiveScan() }   // Opens Camera/Webcam
-            )
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (scannerManager.showCamera) {
-                ImagePickerLauncher(
-                    config = ImagePickerConfig(
-                        onPhotoCaptured = { result ->
-                            scannerManager.reset()
-                            viewModel.processImage(result.loadBytes())
-                        },
-                        onError = { scannerManager.reset() },
-                        onDismiss = { scannerManager.reset() }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Recent Scans",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onBackground // Automatically switches White/Black
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
+                            .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp)) // Adapts to Dark Mode
+                            .padding(8.dp)
+                    ) {
+                        if (scans.isEmpty()) {
+                            Text(
+                                "No recent exports",
+                                modifier = Modifier.align(Alignment.Center),
+                                color = colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            LazyRow(modifier = Modifier.fillMaxWidth()) {
+                                items(scans) { scan ->
+                                    Card(
+                                        modifier = Modifier.padding(vertical = 4.dp),
+                                        // Use default card colors so they adapt
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = colorScheme.surface
+                                        )
+                                    ) {
+                                        ListItem(
+                                            headlineContent = { Text("Document ${scan.id}") },
+                                            supportingContent = { Text(scan.filePath) },
+                                            // ListItem defaults to surface, so no hard-coded white here!
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // --- SECTION 2: EXPORTED DOCUMENTS ---
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Exported Documents",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
+                            .background(colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+                            .padding(8.dp)
+                    ) {
+                        if (scans.isEmpty()) {
+                            Text(
+                                "No recent exports",
+                                modifier = Modifier.align(Alignment.Center),
+                                color = colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                                items(scans) { scan ->
+                                    Card(
+                                        modifier = Modifier.padding(vertical = 4.dp),
+                                        // Use default card colors so they adapt
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = colorScheme.surface
+                                        )
+                                    ) {
+                                        ListItem(
+                                            headlineContent = { Text("Document ${scan.id}") },
+                                            supportingContent = { Text(scan.filePath) },
+                                            // ListItem defaults to surface, so no hard-coded white here!
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(0.1f))
+            }
+
+            if (showMenu) {
+                ScanOptionsDialog(
+                    onDismiss = { showMenu = false }, // Just close the menu
+                    onPickFile = {
+                        showMenu = false
+                        createActive = true
+                        scannerManager.launchFilePicker()
+                    },
+                    onLiveScan = {
+                        showMenu = false
+                        createActive = true
+                        scannerManager.launchLiveScan()
+                    },
+                    onCreateTemplate = {
+                        showMenu = false
+                        createActive = true
+                        scannerManager.launchTemplateCreate()
+                    }
                 )
             }
 
-            if (scannerManager.showGallery) {
-                GalleryPickerLauncher(
-                    onPhotosSelected = { photos ->
-                        scannerManager.reset()
-                        photos.firstOrNull()?.let { viewModel.processImage(it.loadBytes()) }
-                    },
-                    onError = { scannerManager.reset() },
-                    onDismiss = { scannerManager.reset() },
-                    allowMultiple = true
-                )
+            if (createActive) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (scannerManager.showCamera) {
+                        ImagePickerLauncher(
+                            config = ImagePickerConfig(
+                                onPhotoCaptured = { result ->
+                                    scannerManager.reset()
+                                    viewModel.processImage(result.loadBytes())
+                                },
+                                onError = { scannerManager.reset() },
+                                onDismiss = { scannerManager.reset() }
+                            )
+                        )
+                    }
+
+                    if (scannerManager.showGallery) {
+                        GalleryPickerLauncher(
+                            onPhotosSelected = { photos ->
+                                scannerManager.reset()
+                                photos.firstOrNull()?.let { viewModel.processImage(it.loadBytes()) }
+                            },
+                            onError = { scannerManager.reset() },
+                            onDismiss = { scannerManager.reset() },
+                            allowMultiple = true
+                        )
+                    }
+
+                    if (scannerManager.showTemplateCreate) {
+                        CreateTemplateSection(
+                            viewModel = viewModel
+                        )
+                    }
+                }
             }
         }
 

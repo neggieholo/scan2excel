@@ -6,8 +6,11 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import androidx.room.TypeConverters
+import com.dragsville.scan2excel.utils.Converters
 
-@Database(entities = [ScanEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ScanEntity::class, TemplateEntity::class], version = 2, exportSchema = false)
+@TypeConverters(Converters::class)
 @ConstructedBy(ScanDatabaseConstructor::class)
 abstract class ScanDatabase : RoomDatabase() {
     abstract fun scanDao(): ScanDao

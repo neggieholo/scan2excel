@@ -30,18 +30,11 @@ class ScanViewModel(
     private val _ocrDialogText = MutableStateFlow<String?>(null)
     val ocrDialogText: StateFlow<String?> = _ocrDialogText
 
-    @OptIn(kotlin.time.ExperimentalTime::class)
-    fun addFakeScan() {
-        val currentTime = Clock.System.now().toEpochMilliseconds()
-        viewModelScope.launch {
-            val scan = ScanResult(
-                id = currentTime,
-                filePath = "dummy/path.jpg",
-                timestamp = currentTime
-            )
-            repository.saveScan(scan)
-        }
-    }
+    private val _templateFields = MutableStateFlow(listOf(""))
+    val templateFields: StateFlow<List<String>> = _templateFields
+
+    private val _templateName = MutableStateFlow("")
+    val templateName: StateFlow<String> = _templateName
 
     fun processImage(imageBytes: ByteArray) {
         viewModelScope.launch {
@@ -54,8 +47,47 @@ class ScanViewModel(
             }
         }
     }
-
     fun dismissOcrDialog() {
         _ocrDialogText.value = null
+    }
+
+    fun updateTemplateName(name: String) {
+        _templateName.value = name
+    }
+
+    fun addFieldInput() {
+        _templateFields.value = _templateFields.value + ""
+    }
+
+    fun updateField(index: Int, newValue: String) {
+        val currentList = _templateFields.value.toMutableList()
+        currentList[index] = newValue
+        _templateFields.value = currentList
+    }
+
+    fun removeField(index: Int) {
+        val currentList = _templateFields.value.toMutableList()
+        if (currentList.size > 1) {
+            currentList.removeAt(index)
+            _templateFields.value = currentList
+        }
+    }
+
+    fun saveNewTemplate() {
+        viewModelScope.launch {
+            val fieldsToSave = _templateFields.value.filter { it.isNotBlank() }
+            if (_templateName.value.isNotBlank() && fieldsToSave.isNotEmpty()) {
+                repository.saveTemplate(_templateName.value, fieldsToSave)
+                // Reset after saving
+                _templateName.value = ""
+                _templateFields.value = listOf("")
+            }
+        }
+    }
+
+    fun deleteTemplate(id: Long) {
+        viewModelScope.launch {
+            repository.deleteTemplate(id)
+        }
     }
 }
